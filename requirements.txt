@@ -1,3 +1,8 @@
 langchain
 jupyter
 langchain-openai
+fastapi
+langserve
+uvicorn
+sse_startlette
+pydantic

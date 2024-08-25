@@ -6,3 +6,4 @@ langserve
 uvicorn
 sse_startlette
 pydantic
+langchain_community

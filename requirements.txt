@@ -7,3 +7,4 @@ uvicorn
 sse_startlette
 pydantic
 langchain_community
+langchain_chroma

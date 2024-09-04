@@ -4,7 +4,8 @@ langchain-openai
 fastapi
 langserve
 uvicorn
-sse_startlette
 pydantic
 langchain_community
 langchain_chroma
+langchain_anthropic
+langgraph

@@ -9,3 +9,5 @@ langchain_community
 langchain_chroma
 langchain_anthropic
 langgraph
+langchain_pinecone
+pinecone

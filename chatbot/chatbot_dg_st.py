@@ -1,6 +1,5 @@
 import streamlit as st
 import os
-import getpass
 from langchain_community.document_loaders import PyPDFLoader
 from langchain.vectorstores import Chroma
 from langchain.embeddings import OpenAIEmbeddings
@@ -15,21 +14,24 @@ api_key = st.text_input("OpenAI API Key", type="password")
 if api_key:
     os.environ["OPENAI_API_KEY"] = api_key
 
+# Campo de entrada para os caminhos dos arquivos, separados por vírgula
+file_paths_input = st.text_input("Insira os caminhos dos arquivos PDF, separados por vírgula")
+file_paths = [path.strip() for path in file_paths_input.split(',') if path.strip()]
 
 # Função para processar documentos e responder perguntas
-def process_input(question):
+def process_input(question, file_paths):
     # Configuração do modelo da OpenAI com limite de tokens para a resposta
     model_local = ChatOpenAI(model="gpt-4-turbo-preview", max_tokens=1500)  # A chave da API é obtida da variável de ambiente
     
-    file_path = (
-        "2205.02302v3.pdf"
-    )
-    loader = PyPDFLoader(file_path)
-    docs_list = loader.load_and_split()
+    all_docs = []
+    for file_path in file_paths:
+        loader = PyPDFLoader(file_path)
+        docs_list = loader.load_and_split()
+        all_docs.extend(docs_list)
 
     # Dividir o texto em chunks menores
     text_splitter = CharacterTextSplitter.from_tiktoken_encoder(chunk_size=1500, chunk_overlap=100)  # Ajustar o chunk_size
-    doc_splits = text_splitter.split_documents(docs_list)
+    doc_splits = text_splitter.split_documents(all_docs)
 
     # Criar embeddings e armazenar no banco de dados vetorial
     vectorstore = Chroma.from_documents(
@@ -65,13 +67,15 @@ def process_input(question):
 st.title("Buscar documentos através da IA")
 
 # Campo de entrada para a pergunta
-question = st.text_input("input")
+question = st.text_input("Digite sua pergunta:")
 
 # Botão para processar a entrada
 if st.button('Query Document'):
     if not api_key:
-        st.error("Please enter your OpenAI API Key.")
+        st.error("Por favor, insira sua OpenAI API Key.")
+    elif not file_paths:
+        st.error("Por favor, insira os caminhos dos arquivos PDF.")
     else:
         with st.spinner('Processing...'):
-            answer = process_input(question)
-            st.text_area("Answer", value=answer, height=300, disabled=True)
+            answer = process_input(question, file_paths)
+            st.text_area("Resposta", value=answer, height=300)

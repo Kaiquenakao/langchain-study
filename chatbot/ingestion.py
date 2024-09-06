@@ -5,18 +5,18 @@ from langchain_openai import OpenAIEmbeddings
 from langchain_pinecone import PineconeVectorStore
 
 
-os.environ["OPENAI_API_KEY"]
+os.environ["OPENAI_API_KEY"] 
 os.environ["PINECONE_API_KEY"] 
 
 def ingest_docs() -> None:
-    loader = PyPDFLoader("biografia.pdf")
+    loader = PyPDFLoader("mufebr.pdf")
     documents = loader.load()
     print(documents)
     text_splitter = CharacterTextSplitter(chunk_size=100, chunk_overlap=0)
     docs = text_splitter.split_documents(documents)
 
 
-    embeddings = OpenAIEmbeddings(model="text-embedding-3-large")
+    embeddings = OpenAIEmbeddings(model="text-embedding-ada-002")
     PineconeVectorStore.from_documents(docs, embeddings, index_name="chatbot")
     print("-> Added to Pinecone vectorstore vectors")
 
